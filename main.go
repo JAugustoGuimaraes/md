@@ -3,6 +3,8 @@ package main
 import (
   "log"
   "net/http"
+  "os"
+  "fmt"
 
   "github.com/gorilla/websocket"
 
@@ -12,20 +14,24 @@ import (
 )
 
 func main() {
-  filename := "README.md"
+  if len(os.Args) != 2 {
+    fmt.Println(`Usage:
+go run <mdfile>`,
+    )
+    return
+  }
+
+  filename := os.Args[1]
 
   htmlStr, err := mdreader.ReadMDFile(filename)
   if (err != nil) {
     log.Fatal(err)
   }
 
-  renderer, err := mdrender.New()
+  renderer, err := mdrender.New(filename, string(htmlStr))
   if (err != nil) {
     log.Fatal(err)
   }
-
-  renderer.SetTitle(filename)
-  renderer.SetContent(htmlStr)
 
   upgrader := websocket.Upgrader{
       ReadBufferSize:  1024,
@@ -48,24 +54,21 @@ func main() {
   })
 
   watcher.WatchFile(filename, func() {
-    htmlStr, err := mdreader.ReadMDFile(filename)
+    htmlBytes, err := mdreader.ReadMDFile(filename)
     if (err != nil) {
       log.Fatal(err)
     }
 
-    renderer.SetContent(htmlStr)
-
     if wsConn != nil {
-      err := wsConn.WriteMessage(websocket.TextMessage, []byte("refresh"))
+      err := wsConn.WriteMessage(websocket.TextMessage, htmlBytes)
       if err != nil {
-        log.Print(err)
+        log.Fatal(err)
       }
-
-      wsConn.Close()
     }
   })
 
+  fmt.Println("Visit localhost:8080")
   if err := http.ListenAndServe(":8080", nil); err != nil {
-    log.Fatalln(err.Error())
+    log.Fatalln(err)
   }
 }

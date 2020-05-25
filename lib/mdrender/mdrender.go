@@ -14,10 +14,25 @@ type Renderer struct {
 type Data struct {
   Title string
   Content string
+  WebSocketScript string
+  CssSwitchScript string
 }
 
-func New() (*Renderer, error) {
-  indexHtml := fmt.Sprintf(baseIndexHtml, websocketJs, cssSwitchJs)
+func New(title, content string) (*Renderer, error) {
+  indexHtml, err := getIndexHtml()
+  if err != nil {
+    return &Renderer{}, fmt.Errorf("Failed to create renderer: %w", err)
+  }
+
+  websocketJs, err := getWebSocketJs()
+  if err != nil {
+    return &Renderer{}, fmt.Errorf("Failed to create renderer: %w", err)
+  }
+
+  cssSwitchJs, err := getCssSwitchJs()
+  if err != nil {
+    return &Renderer{}, fmt.Errorf("Failed to create renderer: %w", err)
+  }
 
   tmpl, err := template.New("index").Parse(indexHtml)
   if err != nil {
@@ -26,16 +41,13 @@ func New() (*Renderer, error) {
 
   return &Renderer{
     template: tmpl,
-    data: Data{},
+    data: Data{
+      Title: title,
+      Content: content,
+      WebSocketScript: websocketJs,
+      CssSwitchScript: cssSwitchJs,
+    },
   }, nil
-}
-
-func (r *Renderer) SetTitle(title string) {
-  r.data.Title = title
-}
-
-func (r *Renderer) SetContent(content string) {
-  r.data.Content = content
 }
 
 func (r *Renderer) Render(w http.ResponseWriter) error {

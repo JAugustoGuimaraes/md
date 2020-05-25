@@ -8,16 +8,16 @@ import (
   "github.com/yuin/goldmark"
 )
 
-func ReadMDFile(filePath string) (string, error) {
+func ReadMDFile(filePath string) ([]byte, error) {
   mdBuf, err := ioutil.ReadFile(filePath)
   if err != nil {
-    return "", fmt.Errorf("Failed to read file: %w", err)
+    return []byte{}, fmt.Errorf("Failed to read file: %w", err)
   }
 
   var htmlBuf bytes.Buffer
   if err := goldmark.Convert(mdBuf, &htmlBuf); err != nil {
-    return "", fmt.Errorf("Failed to convert Markdown to HTML: %w", err)
+    return []byte{}, fmt.Errorf("Failed to convert Markdown to HTML: %w", err)
   }
 
-  return htmlBuf.String(), nil
+  return htmlBuf.Bytes(), nil
 }

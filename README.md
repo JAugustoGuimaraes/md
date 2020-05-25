@@ -1,13 +1,14 @@
 # MD
 
-A simple Markdown viewer with a simple CSS switcher.
+This is just a simple Markdown viewer:
+- Live reload
+- Css theme switcher
+
+A simple Markdown viewer with live reload and a simple CSS switcher.
 
 ```
-$ go run main.go
+$ go run main.go <mdfile>
 ```
 
 Todo:
-- See this example https://github.com/gorilla/websocket/blob/master/examples/filewatch/main.go
-- Also need to fix the websocket Disconnect issue
-- It seems that it is working now?
-- My genius, it sometimes frightens me
+- Create binary installation
