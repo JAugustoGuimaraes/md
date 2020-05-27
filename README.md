@@ -2,9 +2,16 @@
 
 A simple Markdown viewer with live reload and a simple CSS switcher.
 
-## Install and Run
+To install
 
-1. Clone this repo
-2. `cd` into this repo
-3. `go install .`, this will install in your $GOPATH
-4. Run `md <mdfile>` to start 
+```sh
+$ go get github.com/christiansakai/md
+```
+
+To run
+
+```sh
+$ md <mdfile>
+```
+
+Visit `localhost:8080`
