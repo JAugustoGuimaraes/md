@@ -1,36 +1,35 @@
 package watcher
 
 import (
-  "os"
-  "log"
-  "time"
+	"log"
+	"os"
+	"time"
 )
 
 func WatchFile(filePath string, onChange func()) {
-  go func(filePath string, onChange func()) {
-    stat, err := os.Stat(filePath)
-    if err != nil {
-      log.Fatal(err)
-    }
+	go func(filePath string, onChange func()) {
+		stat, err := os.Stat(filePath)
+		if err != nil {
+			log.Fatal(err)
+		}
 
-    size := stat.Size()
-    modTime := stat.ModTime()
+		size := stat.Size()
+		modTime := stat.ModTime()
 
-    for {
-      newStat, err := os.Stat(filePath)
-      if err != nil {
-        log.Fatal(err)
-      }
+		for {
+			newStat, err := os.Stat(filePath)
+			if err != nil {
+				log.Fatal(err)
+			}
 
+			if newStat.Size() != size || newStat.ModTime() != modTime {
+				size = newStat.Size()
+				modTime = newStat.ModTime()
 
-      if newStat.Size() != size || newStat.ModTime() != modTime {
-        size = newStat.Size()
-        modTime = newStat.ModTime()
+				onChange()
+			}
 
-        onChange()
-      }
-
-      time.Sleep(1 * time.Second)
-    }
-  }(filePath, onChange)
+			time.Sleep(1 * time.Second)
+		}
+	}(filePath, onChange)
 }

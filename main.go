@@ -1,74 +1,74 @@
 package main
 
 import (
-  "log"
-  "net/http"
-  "os"
-  "fmt"
+	"fmt"
+	"log"
+	"net/http"
+	"os"
 
-  "github.com/gorilla/websocket"
+	"github.com/gorilla/websocket"
 
-  "github.com/christiansakai/md/lib/mdreader"
-  "github.com/christiansakai/md/lib/mdrender"
-  "github.com/christiansakai/md/lib/watcher"
+	"github.com/christiansakai/md/lib/mdreader"
+	"github.com/christiansakai/md/lib/mdrender"
+	"github.com/christiansakai/md/lib/watcher"
 )
 
 func main() {
-  if len(os.Args) != 2 {
-    fmt.Println(`Usage:
+	if len(os.Args) != 2 {
+		fmt.Println(`Usage:
 go run <mdfile>`,
-    )
-    return
-  }
+		)
+		return
+	}
 
-  filename := os.Args[1]
+	filename := os.Args[1]
 
-  htmlStr, err := mdreader.ReadMDFile(filename)
-  if (err != nil) {
-    log.Fatal(err)
-  }
+	htmlStr, err := mdreader.ReadMDFile(filename)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-  renderer, err := mdrender.New(filename, string(htmlStr))
-  if (err != nil) {
-    log.Fatal(err)
-  }
+	renderer, err := mdrender.New(filename, string(htmlStr))
+	if err != nil {
+		log.Fatal(err)
+	}
 
-  upgrader := websocket.Upgrader{
-      ReadBufferSize:  1024,
-      WriteBufferSize: 1024,
-  }
+	upgrader := websocket.Upgrader{
+		ReadBufferSize:  1024,
+		WriteBufferSize: 1024,
+	}
 
-  var wsConn *websocket.Conn
+	var wsConn *websocket.Conn
 
-  http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
-    conn, err := upgrader.Upgrade(w, r, nil)
-    if err != nil {
-      log.Fatal(err)
-    }
+	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+		conn, err := upgrader.Upgrade(w, r, nil)
+		if err != nil {
+			log.Fatal(err)
+		}
 
-    wsConn = conn
-  })
+		wsConn = conn
+	})
 
-  http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-    renderer.Render(w)
-  })
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		renderer.Render(w)
+	})
 
-  watcher.WatchFile(filename, func() {
-    htmlBytes, err := mdreader.ReadMDFile(filename)
-    if (err != nil) {
-      log.Fatal(err)
-    }
+	watcher.WatchFile(filename, func() {
+		htmlBytes, err := mdreader.ReadMDFile(filename)
+		if err != nil {
+			log.Fatal(err)
+		}
 
-    if wsConn != nil {
-      err := wsConn.WriteMessage(websocket.TextMessage, htmlBytes)
-      if err != nil {
-        log.Fatal(err)
-      }
-    }
-  })
+		if wsConn != nil {
+			err := wsConn.WriteMessage(websocket.TextMessage, htmlBytes)
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+	})
 
-  fmt.Println("Visit localhost:8080")
-  if err := http.ListenAndServe(":8080", nil); err != nil {
-    log.Fatalln(err)
-  }
+	fmt.Println("Visit localhost:8080")
+	if err := http.ListenAndServe(":8080", nil); err != nil {
+		log.Fatalln(err)
+	}
 }
