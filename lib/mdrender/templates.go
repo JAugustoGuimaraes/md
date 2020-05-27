@@ -25,6 +25,18 @@ func getIndexHtml() (string, error) {
 	}
 
 	indexHtmlPath := path.Join(basePath, "/templates/index.html")
+
+
+  // indexHtmlBuf, err := pkger.Open("templates/index.html")
+  // if err != nil {
+  //   return "", fmt.Errorf("Failed to get index.html: %w", err)
+  // }
+
+  // indexHtml, err := ioutil.ReadAll(indexHtmlBuf)
+  // if err != nil {
+		// return "", fmt.Errorf("Failed to get index.html: %w", err)
+  // }
+
 	indexHtml, err := ioutil.ReadFile(indexHtmlPath)
 	if err != nil {
 		return "", fmt.Errorf("Failed to get index.html: %w", err)
