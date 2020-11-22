@@ -1,4 +1,4 @@
-module github.com/christiansakai/md
+module github.com/JAugustoGuimaraes/md
 
 go 1.14
 
