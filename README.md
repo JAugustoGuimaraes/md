@@ -5,7 +5,7 @@ A simple Markdown viewer with live reload and a simple CSS switcher.
 To install
 
 ```sh
-$ go get github.com/christiansakai/md
+$ go get github.com/JAugustoGuimaraes/md
 ```
 
 To run
