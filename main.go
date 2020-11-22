@@ -8,9 +8,9 @@ import (
 
 	"github.com/gorilla/websocket"
 
-	"github.com/christiansakai/md/lib/mdreader"
-	"github.com/christiansakai/md/lib/mdrender"
-	"github.com/christiansakai/md/lib/watcher"
+	"github.com/JAugustoGuimaraes/md/lib/mdreader"
+	"github.com/JAugustoGuimaraes/md/lib/mdrender"
+	"github.com/JAugustoGuimaraes/md/lib/watcher"
 )
 
 func main() {
