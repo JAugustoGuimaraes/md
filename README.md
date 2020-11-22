@@ -14,4 +14,4 @@ To run
 $ md <mdfile>
 ```
 
-Visit `localhost:8080`
+Visit `localhost:8000`
